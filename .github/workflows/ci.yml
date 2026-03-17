@@ -1,21 +1,46 @@
+# nazwa workflow
 name: Run tests
 
+# push, pullrequest, workflowdispatch
 on:
   push:
   pull_request:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Perform tests
+  lint:
+    name: lint
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-        name: Checkout repo
+        name: repo
 
       - uses: actions/setup-python@v5
-        name: Install Python
+        name: python
+        with:
+          python-version: "3.11"
+
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - run: ruff check .
+
+  # job
+  test:
+    name: Perform tests
+    needs: lint
+    runs-on: ubuntu-latest
+
+    steps:
+      # checkout repo
+      - uses: actions/checkout@v4
+        name: repo 
+
+      #instalka pythona
+      - uses: actions/setup-python@v5
+        name: install python
         with:
           python-version: "3.11"
 
